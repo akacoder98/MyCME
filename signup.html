@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup - MyCME</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-blue-50 flex items-center justify-center min-h-screen p-4">
 
@@ -14,10 +15,10 @@
             <p class="text-gray-500">Create your professional account</p>
         </div>
 
-        <form>
+        <form id="signupForm">
             <div class="mb-4">
                 <label class="block text-sm font-semibold mb-1">I am a:</label>
-                <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                <select id="role" class="w-full p-2 border rounded-lg outline-none">
                     <option value="user">Doctor / Nurse (User)</option>
                     <option value="publisher">College / University (Publisher)</option>
                 </select>
@@ -25,33 +26,77 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-semibold mb-1">Full Name</label>
-                <input type="text" placeholder="Dr. Kamal Perera" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500">
+                <input type="text" id="fullName" placeholder="Dr. Kamal Perera" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-semibold mb-1">Email Address</label>
-                <input type="email" placeholder="kamal@example.com" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500">
+                <input type="email" id="email" placeholder="kamal@example.com" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-semibold mb-1">Password</label>
-                <input type="password" placeholder="••••••••" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500">
+                <input type="password" id="password" placeholder="••••••••" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-semibold mb-1">Workplace / Hospital</label>
-                <input type="text" placeholder="Teaching Hospital..." class="w-full p-2 border rounded-lg outline-none focus:border-blue-500">
+                <label class="block text-sm font-semibold mb-1">Workplace</label>
+                <input type="text" id="workplace" placeholder="Teaching Hospital..." class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
-            <button type="button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">
                 Create Account
             </button>
         </form>
-
-        <p class="text-center mt-6 text-sm text-gray-600">
-            Already have an account? <a href="#" class="text-blue-600 font-bold">Login</a>
-        </p>
     </div>
 
+    <script>
+        // මෙතනට උඹේ විස්තර දාපන් මචෝ
+        const SUPABASE_URL = 'https://ykiunbptdrsqwuuegyno.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraXVuYnB0ZHJzcXd1dWVneW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODU0MDEsImV4cCI6MjA5MjA2MTQwMX0.-0Mnb18-efy03usDoVWlVJLJesdOQyFO2ztKNcGX1Ho';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const signupForm = document.getElementById('signupForm');
+
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Registering...";
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+            const role = document.getElementById('role').value;
+            const workplace = document.getElementById('workplace').value;
+
+            // 1. Supabase Auth එකේ Account එක හැදීම
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert("Error: " + error.message);
+            } else {
+                // 2. Profile table එකට ඉතිරි දත්ත ටික දැමීම
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert([{ 
+                        email: email, 
+                        full_name: fullName, 
+                        role: role, 
+                        workplace: workplace,
+                        cme_id: 'CME-' + Math.floor(1000 + Math.random() * 9000) // Random ID එකක්
+                    }]);
+
+                if (profileError) {
+                    alert("Profile Error: " + profileError.message);
+                } else {
+                    alert("Account Created! Please check your email for confirmation.");
+                }
+            }
+            btn.innerText = "Create Account";
+        });
+    </script>
 </body>
 </html>
