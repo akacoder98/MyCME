@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MyCME</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-blue-900 text-white p-4 shadow-lg">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">MyCME Dashboard</h1>
+            <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-bold transition">Logout</button>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto p-6">
+        <div class="bg-white p-8 rounded-2xl shadow-md mb-6 border-l-8 border-blue-600">
+            <h2 id="welcomeName" class="text-3xl font-bold text-gray-800">Loading...</h2>
+            <p id="userWorkplace" class="text-gray-500 font-medium">Please wait...</p>
+            <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+                CME ID: <span id="cmeId">----</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                <h3 class="text-gray-500 font-bold uppercase text-sm">Total CME Points</h3>
+                <p class="text-5xl font-black text-blue-600 mt-2">12.5</p> 
+                </div>
+            <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                <h3 class="text-gray-500 font-bold uppercase text-sm">Status</h3>
+                <p class="text-3xl font-bold text-green-500 mt-2 italic">Active Member</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ykiunbptdrsqwuuegyno.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraXVuYnB0ZHJzcXd1dWVneW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODU0MDEsImV4cCI6MjA5MjA2MTQwMX0.-0Mnb18-efy03usDoVWlVJLJesdOQyFO2ztKNcGX1Ho';
+        
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadProfile() {
+            // 1. දැනට ලොග් වෙලා ඉන්න කෙනා කවුද බලනවා
+            const { data: { user } } = await sb.auth.getUser();
+
+            if (!user) {
+                // ලොග් වෙලා නැත්නම් login page එකට යවනවා
+                window.location.href = "login.html";
+                return;
+            }
+
+            // 2. ඒ කෙනාගේ විස්තර Table එකෙන් ගන්නවා
+            const { data: profile, error } = await sb
+                .from('profiles')
+                .select('*')
+                .eq('email', user.email)
+                .single();
+
+            if (profile) {
+                document.getElementById('welcomeName').innerText = "Welcome, " + profile.full_name;
+                document.getElementById('userWorkplace').innerText = profile.workplace;
+                document.getElementById('cmeId').innerText = profile.cme_id;
+            }
+        }
+
+        async function logout() {
+            await sb.auth.signOut();
+            window.location.href = "login.html";
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
