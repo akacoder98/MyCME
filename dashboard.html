@@ -10,111 +10,78 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-slate-50 min-h-screen font-sans flex text-slate-800">
+<body class="bg-slate-50 min-h-screen flex text-slate-800">
 
-    <aside class="w-64 bg-blue-900 text-white hidden md:flex flex-col sticky top-0 h-screen shadow-2xl">
-        <div class="p-6 text-center border-b border-blue-800">
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase">MyCME</h1>
-            <p class="text-[9px] uppercase tracking-[0.2em] text-blue-400 font-bold">Official Tracker</p>
+    <aside class="w-64 bg-blue-900 text-white hidden md:flex flex-col sticky top-0 h-screen">
+        <div class="p-8 text-center border-b border-blue-800">
+            <h1 class="text-2xl font-black tracking-tighter uppercase italic">MyCME</h1>
         </div>
         <nav class="flex-1 p-4 space-y-2 mt-4">
-            <a href="#" class="flex items-center space-x-3 p-3 bg-blue-800 rounded-xl transition shadow-inner"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-            <a href="#" onclick="toggleModal('addCmeModal')" class="flex items-center space-x-3 p-3 hover:bg-blue-800 rounded-xl transition"><i class="fas fa-plus-circle"></i> <span>Add CME Record</span></a>
+            <a href="#" class="flex items-center space-x-3 p-3 bg-blue-800 rounded-xl transition"><i class="fas fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="#" onclick="toggleModal('addCmeModal')" class="flex items-center space-x-3 p-3 hover:bg-blue-800 rounded-xl transition"><i class="fas fa-plus"></i> <span>Add Record</span></a>
             <a href="#" onclick="generatePDF()" class="flex items-center space-x-3 p-3 hover:bg-blue-800 rounded-xl transition"><i class="fas fa-file-pdf"></i> <span>Download Report</span></a>
         </nav>
-        <div class="p-4 border-t border-blue-800 text-center">
-            <p id="cmeIdNav" class="text-[10px] text-blue-400 mb-3 font-bold tracking-widest uppercase">CME-####</p>
-            <button onclick="logout()" class="w-full bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-xl transition font-bold text-sm">Sign Out</button>
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="logout()" class="w-full bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-xl transition font-bold text-sm">Logout</button>
         </div>
     </aside>
 
-    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
-        
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+    <main class="flex-1 p-8">
+        <div class="flex justify-between items-center mb-8">
             <div class="flex items-center space-x-4">
-                <img id="profilePic" src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" class="w-16 h-16 rounded-2xl border-2 border-slate-50 shadow-md">
+                <img id="profilePic" src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" class="w-16 h-16 rounded-2xl border-2 border-white shadow-sm">
                 <div>
-                    <h2 id="userName" class="text-2xl font-black text-slate-800">Welcome!</h2>
-                    <p id="workplace" class="text-slate-400 text-xs font-medium">Please wait, loading...</p>
+                    <h2 id="userName" class="text-2xl font-bold">Loading...</h2>
+                    <p id="cmeIdNav" class="text-blue-600 text-xs font-black tracking-widest uppercase">CME-####</p>
                 </div>
             </div>
-            <div class="flex space-x-2">
-                <select id="timeFilter" onchange="loadCmeData()" class="p-2 border border-slate-200 rounded-xl text-xs font-bold outline-none bg-slate-50 cursor-pointer">
-                    <option value="90">LAST 3 MONTHS</option>
-                    <option value="365" selected>LAST 1 YEAR</option>
-                    <option value="all">ALL TIME RECORDS</option>
-                </select>
-                <button onclick="toggleModal('addCmeModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition text-xs shadow-lg shadow-blue-200 uppercase tracking-wider">
-                    + Add CME
-                </button>
-            </div>
+            <select id="timeFilter" onchange="loadCmeData()" class="p-2 border rounded-xl text-xs font-bold bg-white">
+                <option value="90">Last 3 Months</option>
+                <option value="365" selected>Last 1 Year</option>
+                <option value="all">All Records</option>
+            </select>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="md:col-span-2 bg-gradient-to-br from-blue-600 to-blue-900 rounded-[2rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <h3 class="text-blue-300 uppercase text-xs font-black tracking-[0.2em] mb-4">Current Accumulated Score</h3>
-                    <div class="flex items-baseline space-x-3">
-                        <span id="totalPoints" class="text-8xl font-black tracking-tighter">0.0</span>
-                        <span class="text-blue-400 font-bold uppercase text-sm tracking-widest">CME Points</span>
-                    </div>
-                </div>
-                <i class="fas fa-medal absolute -right-4 -bottom-4 text-[12rem] text-white/10 rotate-12"></i>
+        <div class="bg-gradient-to-r from-blue-700 to-blue-900 rounded-[2.5rem] p-10 text-white shadow-2xl mb-8 flex justify-between items-center relative overflow-hidden">
+            <div class="relative z-10">
+                <h3 class="text-blue-200 uppercase text-xs font-bold tracking-[0.2em] mb-2">Total CME Points</h3>
+                <span id="totalPoints" class="text-8xl font-black">0.0</span>
             </div>
-            
-            <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 flex flex-col justify-center items-center text-center">
-                <div class="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-user-check text-2xl"></i>
-                </div>
-                <h3 class="font-black text-slate-800 uppercase tracking-tighter">Verified</h3>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Medical Practitioner</p>
-            </div>
+            <i class="fas fa-award text-[10rem] text-white/10 absolute right-4 -bottom-4 rotate-12"></i>
         </div>
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                <h3 class="font-black text-slate-800 uppercase text-sm tracking-widest">Submission History</h3>
-                <button onclick="generatePDF()" class="text-blue-600 hover:text-blue-800 text-[10px] font-black uppercase tracking-widest bg-blue-50 px-3 py-1.5 rounded-full"><i class="fas fa-download mr-1"></i> PDF REPORT</button>
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="font-bold uppercase text-xs tracking-widest text-slate-400">Activity Log</h3>
+                <button onclick="toggleModal('addCmeModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">+ New Entry</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest border-b border-slate-100">
+                    <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400">
                         <tr>
-                            <th class="px-8 py-5">Date</th>
-                            <th class="px-8 py-5">Course / Topic</th>
-                            <th class="px-8 py-5">Organizer</th>
-                            <th class="px-8 py-5">Points</th>
-                            <th class="px-8 py-5 text-center">Certificate</th>
+                            <th class="px-6 py-4">Date</th>
+                            <th class="px-6 py-4">Topic</th>
+                            <th class="px-6 py-4">Organizer</th>
+                            <th class="px-6 py-4 text-center">Points</th>
+                            <th class="px-6 py-4 text-center">Doc</th>
                         </tr>
                     </thead>
-                    <tbody id="cmeTableBody" class="divide-y divide-slate-50 text-sm font-medium">
-                        </tbody>
+                    <tbody id="cmeTableBody" class="text-sm"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <div id="addCmeModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 border-t-[10px] border-blue-600">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Add CME Record</h3>
-                <button onclick="toggleModal('addCmeModal')" class="text-slate-300 hover:text-slate-600 text-3xl transition">&times;</button>
-            </div>
-            <form id="cmeForm" class="space-y-5">
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Completion Date</label>
-                    <input type="date" id="cmeDate" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 font-bold transition" required>
-                </div>
-                <input type="text" id="cmeTopic" placeholder="Course Name / Topic" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 font-bold transition text-sm" required>
-                <input type="text" id="cmeOrganizer" placeholder="Organizer (e.g. SLMA, Ministry)" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 font-bold transition text-sm" required>
-                <input type="number" step="0.5" id="cmePoints" placeholder="Points Earned (e.g. 2.0)" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 font-bold transition text-sm" required>
-                <div class="bg-blue-50 p-4 rounded-2xl border-2 border-dashed border-blue-100">
-                    <label class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-3 block">Upload Certificate (PDF/Image)</label>
-                    <input type="file" id="cmeFile" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white" required>
-                </div>
-                <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition duration-300 uppercase tracking-widest text-sm">
-                    Confirm & Save
-                </button>
+    <div id="addCmeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-8">
+            <h3 class="text-xl font-bold mb-6">New CME Entry</h3>
+            <form id="cmeForm" class="space-y-4">
+                <input type="date" id="cmeDate" class="w-full p-4 bg-slate-50 border rounded-xl outline-none" required>
+                <input type="text" id="cmeTopic" placeholder="Topic Name" class="w-full p-4 bg-slate-50 border rounded-xl outline-none" required>
+                <input type="text" id="cmeOrganizer" placeholder="Organizer" class="w-full p-4 bg-slate-50 border rounded-xl outline-none" required>
+                <input type="number" step="0.5" id="cmePoints" placeholder="Points" class="w-full p-4 bg-slate-50 border rounded-xl outline-none" required>
+                <input type="file" id="cmeFile" class="text-xs" required>
+                <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg">Submit Record</button>
             </form>
         </div>
     </div>
@@ -125,7 +92,6 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let userProfile = null;
-        let cmeRecords = [];
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
 
@@ -133,22 +99,19 @@
             const { data: { user } } = await sb.auth.getUser();
             if (!user) { window.location.href = "login.html"; return; }
 
-            // ලොග් වුණු කෙනාගේ Profile එක ගන්නවා
             const { data: profile } = await sb.from('profiles').select('*').eq('email', user.email).single();
             if (profile) {
                 userProfile = profile;
-                document.getElementById('userName').innerText = "Hi, " + profile.full_name;
-                document.getElementById('workplace').innerText = profile.workplace;
+                document.getElementById('userName').innerText = profile.full_name;
                 document.getElementById('cmeIdNav').innerText = profile.cme_id;
-                document.getElementById('profilePic').src = `https://ui-avatars.com/api/?name=${profile.full_name}&background=0D8ABC&color=fff&rounded=true&bold=true`;
             }
             loadCmeData();
         }
 
         async function loadCmeData() {
             const days = document.getElementById('timeFilter').value;
-            // Case-insensitive check එකක් පාවිච්චි කරනවා (ilike)
-            let query = sb.from('cme_records').select('*').ilike('user_email', userProfile.email).order('date', { ascending: false });
+            // RLS නිසා මෙතන Email filter එක නැතත් තමන්ගේ දත්ත විතරයි පේන්නේ.
+            let query = sb.from('cme_records').select('*').order('date', { ascending: false });
 
             if(days !== 'all') {
                 const limit = new Date();
@@ -156,26 +119,14 @@
                 query = query.gte('date', limit.toISOString());
             }
 
-            const { data, error } = await query;
+            const { data } = await query;
             if (data) {
-                cmeRecords = data;
                 const tbody = document.getElementById('cmeTableBody');
-                tbody.innerHTML = data.length ? "" : "<tr><td colspan='5' class='p-16 text-center text-slate-300 font-bold italic tracking-widest uppercase text-xs'>No records found for the selected period.</td></tr>";
+                tbody.innerHTML = "";
                 let total = 0;
                 data.forEach(rec => {
                     total += parseFloat(rec.points);
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50/80 transition group">
-                            <td class="px-8 py-5 text-slate-400 font-bold text-xs">${rec.date}</td>
-                            <td class="px-8 py-5 font-black text-slate-800">${rec.topic}</td>
-                            <td class="px-8 py-5 text-slate-500 font-bold">${rec.organizer}</td>
-                            <td class="px-8 py-5 font-black text-blue-600 text-lg">+${rec.points}</td>
-                            <td class="px-8 py-5 text-center">
-                                <a href="${rec.cert_url}" target="_blank" class="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition shadow-sm">
-                                    <i class="fas fa-file-alt"></i>
-                                </a>
-                            </td>
-                        </tr>`;
+                    tbody.innerHTML += `<tr class="border-b"><td class="px-6 py-4">${rec.date}</td><td class="px-6 py-4 font-bold">${rec.topic}</td><td class="px-6 py-4">${rec.organizer}</td><td class="px-6 py-4 text-center font-black text-blue-600">${rec.points}</td><td class="px-6 py-4 text-center"><a href="${rec.cert_url}" target="_blank" class="text-blue-500"><i class="fas fa-file-pdf"></i></a></td></tr>`;
                 });
                 document.getElementById('totalPoints').innerText = total.toFixed(1);
             }
@@ -184,64 +135,40 @@
         document.getElementById('cmeForm').onsubmit = async function(e) {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
-            btn.innerText = "UPLOADING DATA..."; btn.disabled = true;
+            btn.innerText = "Saving..."; btn.disabled = true;
 
             const file = document.getElementById('cmeFile').files[0];
             const fileName = `${Date.now()}_${file.name}`;
             
             try {
-                // 1. Storage Upload
-                const { error: upErr } = await sb.storage.from('certificates').upload(`uploads/${fileName}`, file);
-                if(upErr) throw upErr;
+                // 1. Upload
+                await sb.storage.from('certificates').upload(`uploads/${fileName}`, file);
                 const { data: { publicUrl } } = sb.storage.from('certificates').getPublicUrl(`uploads/${fileName}`);
 
-                // 2. Database Insert
+                // 2. Insert (user_id එක යවන්නේ නැහැ, Supabase එක auto දාගන්නවා)
                 const { error: dbErr } = await sb.from('cme_records').insert([{
-                    user_email: userProfile.email.toLowerCase(), // ඊමේල් එක සේව් කරන්නේ සිම්පල් අකුරින්
+                    user_email: userProfile.email,
                     date: document.getElementById('cmeDate').value,
                     topic: document.getElementById('cmeTopic').value,
                     organizer: document.getElementById('cmeOrganizer').value,
                     points: document.getElementById('cmePoints').value,
                     cert_url: publicUrl
                 }]);
-                if(dbErr) throw dbErr;
 
-                alert("SUCCESS: CME Record has been added to your profile!");
+                if(dbErr) throw dbErr;
+                alert("Saved!");
                 toggleModal('addCmeModal');
                 loadCmeData();
                 document.getElementById('cmeForm').reset();
-            } catch (err) { alert("ERROR: " + err.message); }
-            finally { btn.innerText = "CONFIRM & SAVE"; btn.disabled = false; }
+            } catch (err) { alert(err.message); }
+            finally { btn.innerText = "Submit Record"; btn.disabled = false; }
         };
 
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFillColor(13, 138, 188); doc.rect(0, 0, 210, 35, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont(undefined, 'bold');
-            doc.text("CONTINUOUS MEDICAL EDUCATION REPORT", 105, 18, null, null, "center");
-            doc.setFontSize(9); doc.setFont(undefined, 'normal');
-            doc.text("OFFICIAL VERIFIED SUMMARY FROM MYCME PORTAL", 105, 26, null, null, "center");
-
-            doc.setTextColor(40, 40, 40); doc.setFontSize(11);
-            doc.text(`Practitioner: ${userProfile.full_name}`, 20, 50);
-            doc.text(`CME Registration ID: ${userProfile.cme_id}`, 20, 58);
-            doc.text(`Institution: ${userProfile.workplace}`, 20, 66);
-            doc.text(`Total Accumulated Score: ${document.getElementById('totalPoints').innerText} Points`, 130, 50);
-            doc.text(`Generated Date: ${new Date().toLocaleDateString()}`, 130, 58);
-
-            doc.autoTable({ 
-                startY: 75, 
-                head: [['DATE', 'COURSE / PROGRAMME TOPIC', 'ORGANIZING BODY', 'POINTS']], 
-                body: cmeRecords.map(r => [r.date, r.topic, r.organizer, r.points]),
-                theme: 'striped',
-                headStyles: {fillColor: [13, 138, 188], fontSize: 9, fontStyle: 'bold'},
-                styles: {fontSize: 8}
-            });
-
-            doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-            doc.text("This is an electronically generated official document. Verification can be performed via the MyCME portal.", 105, 285, null, null, "center");
-            doc.save(`MyCME_Report_${userProfile.full_name}.pdf`);
+            doc.text("CME Report - " + userProfile.full_name, 20, 20);
+            doc.save("Report.pdf");
         }
 
         async function logout() { await sb.auth.signOut(); window.location.href = "login.html"; }
