@@ -9,6 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .ticker-wrap { overflow: hidden; background: #1e293b; color: #60a5fa; padding: 10px 0; border-radius: 1rem; margin-bottom: 1.5rem; }
+        .ticker-item { display: inline-block; white-space: nowrap; animation: ticker 25s linear infinite; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen font-sans flex text-slate-800">
 
@@ -23,11 +31,18 @@
             <a href="#" onclick="generatePDF()" class="flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-xl transition"><i class="fas fa-file-pdf"></i> <span>Download Report</span></a>
         </nav>
         <div class="p-6 border-t border-slate-800">
-            <button onclick="logout()" class="w-full bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-xl transition font-bold text-sm">Sign Out</button>
+            <button onclick="logout()" class="w-full bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-xl transition font-bold text-sm uppercase">Sign Out</button>
         </div>
     </aside>
 
-    <main class="flex-1 p-8">
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+        
+        <div class="ticker-wrap shadow-xl">
+            <div class="ticker-item">
+                📢 IMPORTANT: New Cardiology Guidelines 2026 released by SLMC | 🏆 UPCOMING: National Health Summit on May 20th | 🛠️ SYSTEM: Cloud backup completed successfully.
+            </div>
+        </div>
+
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center space-x-5">
                 <div class="relative group cursor-pointer" onclick="toggleModal('avatarModal')">
@@ -37,101 +52,117 @@
                     </div>
                 </div>
                 <div>
-                    <h2 id="userName" class="text-3xl font-black text-slate-900 italic">Dr. Loading...</h2>
-                    <p id="workplace" class="text-blue-600 font-bold uppercase text-[10px] tracking-widest mt-1">Hospital: Loading...</p>
+                    <h2 id="userName" class="text-3xl font-black text-slate-900 italic tracking-tight">Dr. Loading...</h2>
+                    <p id="workplace" class="text-blue-600 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Hospital: Loading...</p>
                 </div>
             </div>
             <button onclick="toggleModal('addCmeModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl transition uppercase text-xs tracking-widest">+ Add Record</button>
         </div>
 
-        <div class="bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl mb-8 flex justify-between items-center relative overflow-hidden">
-            <div>
-                <p class="text-slate-500 uppercase text-xs font-black tracking-widest mb-2">Total Accumulated Credits</p>
-                <span id="totalPoints" class="text-8xl font-black tracking-tighter">0.0</span>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="lg:col-span-2 bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl flex justify-between items-center relative overflow-hidden">
+                <div class="z-10">
+                    <p class="text-slate-500 uppercase text-xs font-black tracking-widest mb-2">Total Accumulated Credits</p>
+                    <span id="totalPoints" class="text-8xl font-black tracking-tighter">0.0</span>
+                </div>
+                <i class="fas fa-medal text-white/5 text-[15rem] absolute -right-10 -bottom-10 rotate-12"></i>
             </div>
-            <i class="fas fa-medal text-white/5 text-[12rem] absolute -right-5 -bottom-5"></i>
+
+            <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-[3rem] p-8 text-white shadow-2xl flex flex-col justify-center relative overflow-hidden group">
+                <div class="z-10">
+                    <span class="bg-white/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Featured Event</span>
+                    <h4 class="text-xl font-black mt-4 leading-tight italic">CME Workshop: <br>Acute ACS Protocols</h4>
+                    <p class="text-xs text-blue-100 mt-2 font-bold uppercase opacity-80">May 12th @ 8:00 PM</p>
+                    <button class="mt-6 bg-white text-blue-700 px-6 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg group-hover:scale-105 transition">Register Now</button>
+                </div>
+                <i class="fas fa-calendar-alt absolute -right-4 -bottom-4 text-8xl text-white/10 -rotate-12"></i>
+            </div>
         </div>
 
-        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 border-b flex justify-between items-center bg-slate-50/50">
+                <h3 class="font-black text-slate-800 uppercase text-[10px] tracking-[0.2em]">CME Activity History</h3>
+                <span class="text-slate-400 text-[10px] font-bold">Showing All Records</span>
+            </div>
             <table class="w-full text-left">
                 <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400 border-b">
-                    <tr><th class="px-8 py-5 tracking-widest">Date</th><th class="px-8 py-5 tracking-widest">Topic</th><th class="px-8 py-5 tracking-widest">Organizer</th><th class="px-8 py-5 text-center tracking-widest">Points</th><th class="px-8 py-5 text-center tracking-widest">Doc</th></tr>
+                    <tr><th class="px-8 py-5">Date</th><th class="px-8 py-5">Topic</th><th class="px-8 py-5">Organizer</th><th class="px-8 py-5 text-center">Points</th><th class="px-8 py-5 text-center">Doc</th></tr>
                 </thead>
                 <tbody id="cmeTableBody" class="divide-y divide-slate-50 font-medium"></tbody>
             </table>
         </div>
     </main>
 
-    <div id="avatarModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl relative">
-            <button onclick="toggleModal('avatarModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600">&times;</button>
-            <h3 class="text-xl font-black mb-6">Update Profile Picture</h3>
-            <div class="bg-blue-50 p-6 rounded-2xl border-2 border-dashed border-blue-200 text-center mb-6">
-                <input type="file" id="avatarFileInput" class="text-xs font-bold text-slate-500" accept="image/*">
-            </div>
-            <button id="upAvatarBtn" onclick="uploadAvatar()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs mb-3">Upload & Save</button>
-            <button onclick="toggleModal('avatarModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest">Cancel / Close</button>
+    <div id="addCmeModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
+            <button onclick="toggleModal('addCmeModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600 transition">&times;</button>
+            <h3 class="text-2xl font-black mb-6 italic text-blue-600 tracking-tighter">New CME Entry</h3>
+            <form id="cmeForm" class="space-y-4">
+                <input type="date" id="cmeDate" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
+                <input type="text" id="cmeTopic" placeholder="Topic Name (e.g. ECG Lecture)" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
+                <input type="text" id="cmeOrganizer" placeholder="Organizer (e.g. SLMC)" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
+                <input type="number" step="0.5" id="cmePoints" placeholder="Credit Points" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
+                <div class="bg-blue-50 p-4 rounded-2xl border-2 border-dashed border-blue-200">
+                    <label class="text-[10px] font-black text-blue-600 uppercase mb-2 block tracking-widest">Upload Certificate</label>
+                    <input type="file" id="cmeFile" class="text-xs font-bold" required>
+                </div>
+                <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs tracking-widest shadow-xl hover:bg-blue-700 transition">Save Record</button>
+                <button type="button" onclick="toggleModal('addCmeModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">Cancel & Close</button>
+            </form>
         </div>
     </div>
 
     <div id="profileModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
-            <button onclick="toggleModal('profileModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600">&times;</button>
-            <h3 class="text-xl font-black mb-6 italic">Edit Professional Profile</h3>
+            <button onclick="toggleModal('profileModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600 transition">&times;</button>
+            <h3 class="text-xl font-black mb-6 italic">Edit Professional Info</h3>
             <form id="profileUpdateForm" class="space-y-5">
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Full Name (Dr. Example)</label>
-                    <input type="text" id="upName" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" required>
+                    <input type="text" id="upName" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Workplace / Current Hospital</label>
-                    <input type="text" id="upWorkplace" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" required>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Workplace / Hospital</label>
+                    <input type="text" id="upWorkplace" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
                 </div>
-                <button type="submit" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl uppercase text-xs tracking-widest shadow-xl">Save Changes</button>
-                <button type="button" onclick="toggleModal('profileModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest">Cancel / Close</button>
+                <button type="submit" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl uppercase text-xs tracking-widest shadow-xl">Update Profile</button>
+                <button type="button" onclick="toggleModal('profileModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">Cancel</button>
             </form>
         </div>
     </div>
 
     <div id="passwordCheckModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
-            <button onclick="toggleModal('passwordCheckModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600">&times;</button>
-            <h3 class="text-xl font-black mb-4 text-red-600 italic">Security Verification</h3>
-            <p class="text-[10px] font-black text-slate-400 mb-6 uppercase tracking-widest">Enter current password to continue</p>
+            <button onclick="toggleModal('passwordCheckModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600 transition">&times;</button>
+            <h3 class="text-xl font-black mb-4 text-red-600 italic">Security Check</h3>
+            <p class="text-[10px] font-black text-slate-400 mb-6 uppercase tracking-widest">Enter current password to proceed</p>
             <form id="verifyPassForm" class="space-y-4">
                 <input type="password" id="oldPass" placeholder="Current Password" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
-                <button type="submit" id="verifyBtn" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs">Verify & Next</button>
-                <button type="button" onclick="toggleModal('passwordCheckModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase">Cancel</button>
+                <button type="submit" id="verifyBtn" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs tracking-widest">Verify Password</button>
+                <button type="button" onclick="toggleModal('passwordCheckModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest">Cancel</button>
             </form>
         </div>
     </div>
 
     <div id="newPasswordModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border-t-8 border-green-500 relative">
-            <h3 class="text-xl font-black mb-6 italic">Enter New Password</h3>
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border-t-8 border-green-500">
+            <h3 class="text-xl font-black mb-6 italic">Set New Password</h3>
             <form id="newPassForm" class="space-y-4">
-                <input type="password" id="newPass" placeholder="Enter New Password" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required minlength="6">
-                <button type="submit" class="w-full bg-green-600 text-white font-black py-4 rounded-2xl uppercase text-xs">Update Password</button>
+                <input type="password" id="newPass" placeholder="Min 6 characters" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required minlength="6">
+                <button type="submit" class="w-full bg-green-600 text-white font-black py-4 rounded-2xl uppercase text-xs">Confirm & Update</button>
             </form>
         </div>
     </div>
 
-    <div id="addCmeModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative">
-            <button onclick="toggleModal('addCmeModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600">&times;</button>
-            <h3 class="text-2xl font-black mb-6 tracking-tighter italic text-blue-600">New CME Entry</h3>
-            <form id="cmeForm" class="space-y-4">
-                <input type="date" id="cmeDate" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
-                <input type="text" id="cmeTopic" placeholder="Topic Name (e.g. ECG Lecture)" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
-                <input type="text" id="cmeOrganizer" placeholder="Organizer (e.g. SLMC)" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
-                <input type="number" step="0.5" id="cmePoints" placeholder="Points" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none" required>
-                <div class="bg-blue-50 p-4 rounded-2xl border-2 border-dashed border-blue-200">
-                    <label class="text-[10px] font-black text-blue-600 uppercase mb-2 block">Certificate File</label>
-                    <input type="file" id="cmeFile" class="text-xs font-bold" required>
-                </div>
-                <button type="submit" id="saveBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl uppercase text-xs tracking-widest shadow-xl">Submit to Profile</button>
-                <button type="button" onclick="toggleModal('addCmeModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase">Cancel</button>
-            </form>
+    <div id="avatarModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl relative">
+            <button onclick="toggleModal('avatarModal')" class="absolute top-6 right-6 text-2xl text-slate-300 hover:text-slate-600 transition">&times;</button>
+            <h3 class="text-xl font-black mb-6 italic">Update Photo</h3>
+            <div class="bg-blue-50 p-6 rounded-2xl border-2 border-dashed border-blue-200 text-center mb-6">
+                <input type="file" id="avatarFileInput" class="text-xs font-bold text-slate-500" accept="image/*">
+            </div>
+            <button id="upAvatarBtn" onclick="uploadAvatar()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs tracking-widest mb-3">Upload & Save</button>
+            <button onclick="toggleModal('avatarModal')" class="w-full text-slate-400 font-bold text-[10px] uppercase">Cancel</button>
         </div>
     </div>
 
@@ -169,95 +200,63 @@
                 tbody.innerHTML = ""; let total = 0;
                 data.forEach(rec => {
                     total += parseFloat(rec.points);
-                    tbody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50 transition"><td class="px-8 py-5 text-slate-400 text-xs">${rec.date}</td><td class="px-8 py-5 font-black text-slate-800">${rec.topic}</td><td class="px-8 py-5 text-slate-500">${rec.organizer}</td><td class="px-8 py-5 text-center font-black text-blue-600 text-lg">+${rec.points}</td><td class="px-8 py-5 text-center"><a href="${rec.cert_url}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-file-alt"></i></a></td></tr>`;
+                    tbody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50 transition"><td class="px-8 py-5 text-slate-400 text-xs font-bold">${rec.date}</td><td class="px-8 py-5 font-black text-slate-800 tracking-tight">${rec.topic}</td><td class="px-8 py-5 text-slate-500 font-bold">${rec.organizer}</td><td class="px-8 py-5 text-center font-black text-blue-600 text-lg">+${rec.points}</td><td class="px-8 py-5 text-center"><a href="${rec.cert_url}" target="_blank" class="w-10 h-10 inline-flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition"><i class="fas fa-file-alt"></i></a></td></tr>`;
                 });
                 document.getElementById('totalPoints').innerText = total.toFixed(1);
             }
         }
 
-        // --- 1. Profile Pic Upload (Real File) ---
         async function uploadAvatar() {
             const file = document.getElementById('avatarFileInput').files[0];
-            if(!file) { alert("Please select a file first!"); return; }
+            if(!file) return;
             const btn = document.getElementById('upAvatarBtn');
-            btn.innerText = "Uploading..."; btn.disabled = true;
-
-            try {
-                const fileName = `avatar_${Date.now()}`;
-                await sb.storage.from('certificates').upload(`avatars/${fileName}`, file);
-                const { data: { publicUrl } } = sb.storage.from('certificates').getPublicUrl(`avatars/${fileName}`);
-                await sb.from('profiles').update({ avatar_url: publicUrl }).eq('email', userProfile.email);
-                location.reload();
-            } catch (err) { alert(err.message); }
-            finally { btn.innerText = "Upload & Save"; btn.disabled = false; }
+            btn.innerText = "Saving..."; btn.disabled = true;
+            const fileName = `avatar_${Date.now()}`;
+            await sb.storage.from('certificates').upload(`avatars/${fileName}`, file);
+            const { data: { publicUrl } } = sb.storage.from('certificates').getPublicUrl(`avatars/${fileName}`);
+            await sb.from('profiles').update({ avatar_url: publicUrl }).eq('email', userProfile.email);
+            location.reload();
         }
 
-        // --- 2. Edit Profile Info ---
         document.getElementById('profileUpdateForm').onsubmit = async function(e) {
             e.preventDefault();
-            const { error } = await sb.from('profiles').update({
-                full_name: document.getElementById('upName').value,
-                workplace: document.getElementById('upWorkplace').value
-            }).eq('email', userProfile.email);
-            if (!error) { alert("Profile Details Updated!"); location.reload(); }
-            else { alert(error.message); }
+            await sb.from('profiles').update({ full_name: document.getElementById('upName').value, workplace: document.getElementById('upWorkplace').value }).eq('email', userProfile.email);
+            location.reload();
         };
 
-        // --- 3. Password Change ---
         document.getElementById('verifyPassForm').onsubmit = async function(e) {
             e.preventDefault();
-            const pass = document.getElementById('oldPass').value;
-            const { error } = await sb.auth.signInWithPassword({ email: userProfile.email, password: pass });
-            if (!error) { toggleModal('passwordCheckModal'); toggleModal('newPasswordModal'); }
-            else { alert("Incorrect current password!"); }
+            const { error } = await sb.auth.signInWithPassword({ email: userProfile.email, password: document.getElementById('oldPass').value });
+            if (!error) { toggleModal('passwordCheckModal'); toggleModal('newPasswordModal'); } else { alert("Verification Failed!"); }
         };
 
         document.getElementById('newPassForm').onsubmit = async function(e) {
             e.preventDefault();
             const { error } = await sb.auth.updateUser({ password: document.getElementById('newPass').value });
-            if (!error) { alert("Success! Password changed."); toggleModal('newPasswordModal'); }
-            else { alert(error.message); }
+            if (!error) { alert("Security Updated!"); toggleModal('newPasswordModal'); }
         };
 
-        // --- 4. PDF Download ---
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFillColor(13, 138, 188); doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont(undefined, 'bold');
             doc.text("CME PERFORMANCE REPORT", 105, 20, null, null, "center");
-            doc.setTextColor(40, 40, 40); doc.setFontSize(12);
-            doc.text(`Practitioner: Dr. ${userProfile.full_name}`, 20, 55);
-            doc.text(`Workplace: ${userProfile.workplace}`, 20, 63);
-            doc.autoTable({
-                startY: 75,
-                head: [['DATE', 'COURSE TOPIC', 'ORGANIZER', 'POINTS']],
-                body: cmeRecords.map(r => [r.date, r.topic, r.organizer, r.points]),
-                theme: 'striped',
-                headStyles: {fillColor: [13, 138, 188]}
-            });
+            doc.setTextColor(40, 40, 40); doc.setFontSize(10);
+            doc.text(`Dr. ${userProfile.full_name} | ${userProfile.workplace}`, 20, 50);
+            doc.autoTable({ startY: 60, head: [['DATE', 'TOPIC', 'ORGANIZER', 'POINTS']], body: cmeRecords.map(r => [r.date, r.topic, r.organizer, r.points]), theme: 'striped', headStyles: {fillColor: [13, 138, 188]} });
             doc.save(`CME_Report.pdf`);
         }
 
-        // --- 5. Add CME Insert ---
         document.getElementById('cmeForm').onsubmit = async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('saveBtn'); btn.innerText = "UPLOADING..."; btn.disabled = true;
+            const btn = document.getElementById('saveBtn'); btn.innerText = "Uploading...";
             const file = document.getElementById('cmeFile').files[0];
             const fileName = `${Date.now()}_${file.name}`;
-            try {
-                await sb.storage.from('certificates').upload(`uploads/${fileName}`, file);
-                const { data: { publicUrl } } = sb.storage.from('certificates').getPublicUrl(`uploads/${fileName}`);
-                await sb.from('cme_records').insert([{
-                    user_email: userProfile.email,
-                    date: document.getElementById('cmeDate').value,
-                    topic: document.getElementById('cmeTopic').value,
-                    organizer: document.getElementById('cmeOrganizer').value,
-                    points: document.getElementById('cmePoints').value,
-                    cert_url: publicUrl
-                }]);
-                location.reload();
-            } catch (err) { alert(err.message); }
+            await sb.storage.from('certificates').upload(`uploads/${fileName}`, file);
+            const { data: { publicUrl } } = sb.storage.from('certificates').getPublicUrl(`uploads/${fileName}`);
+            await sb.from('cme_records').insert([{ user_email: userProfile.email, date: document.getElementById('cmeDate').value, topic: document.getElementById('cmeTopic').value, organizer: document.getElementById('cmeOrganizer').value, points: document.getElementById('cmePoints').value, cert_url: publicUrl }]);
+            location.reload();
         };
 
         async function logout() { await sb.auth.signOut(); window.location.href = "login.html"; }
