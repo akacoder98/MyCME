@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MyCME</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-blue-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-blue-900 tracking-tighter">MyCME</h1>
+            <p class="text-gray-500 italic text-sm font-medium uppercase tracking-widest mt-1">Log in to your account</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Email Address</label>
+                <input type="email" id="email" placeholder="doctor@example.com" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Password</label>
+                <input type="password" id="pass" placeholder="••••••••" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
+            </div>
+
+            <button type="submit" id="btn" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition duration-300 mb-4">
+                Log In
+            </button>
+
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Don't have an account? <a href="signup.html" class="text-blue-600 font-bold hover:underline">Sign Up</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://ykiunbptdrsqwuuegyno.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraXVuYnB0ZHJzcXd1dWVneW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODU0MDEsImV4cCI6MjA5MjA2MTQwMX0.-0Mnb18-efy03usDoVWlVJLJesdOQyFO2ztKNcGX1Ho';
+        
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('loginForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn');
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('pass').value;
+
+            try {
+                // Login using Supabase Auth
+                const { data, error } = await sb.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // සාර්ථකව ලොග් වුණාම Dashboard එකට යවනවා
+                alert("ලොග් වීම සාර්ථකයි!");
+                window.location.href = "dashboard.html"; 
+
+            } catch (err) {
+                alert("Login Error: " + err.message);
+            } finally {
+                btn.innerText = "Log In";
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
