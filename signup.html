@@ -11,99 +11,110 @@
 
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-blue-900">MyCME</h1>
-            <p class="text-gray-500">Create your professional account</p>
+            <h1 class="text-4xl font-extrabold text-blue-900 tracking-tighter">MyCME</h1>
+            <p class="text-gray-500 italic text-sm font-medium uppercase tracking-widest mt-1">Medical Education Tracker</p>
         </div>
 
-        <form id="signupForm">
+        <form id="signupForm" onsubmit="signUp(event)">
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">I am a:</label>
-                <select id="role" class="w-full p-2 border rounded-lg outline-none">
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Register as:</label>
+                <select id="role" class="w-full p-2.5 border rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-blue-400">
                     <option value="user">Doctor / Nurse (User)</option>
                     <option value="publisher">College / University (Publisher)</option>
                 </select>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Full Name</label>
-                <input type="text" id="fullName" placeholder="Dr. Kamal Perera" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Full Name</label>
+                <input type="text" id="fullName" placeholder="Dr. Kamal Perera" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Email Address</label>
-                <input type="email" id="email" placeholder="kamal@example.com" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Email Address</label>
+                <input type="email" id="email" placeholder="kamal@example.com" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Password</label>
-                <input type="password" id="password" placeholder="••••••••" class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Password</label>
+                <div class="relative">
+                    <input type="password" id="pass" placeholder="••••••••" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
+                    <button type="button" onclick="togglePass()" class="absolute right-2 top-2 text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded font-bold transition">SHOW</button>
+                </div>
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-semibold mb-1">Workplace / Institution</label>
-                <input type="text" id="workplace" placeholder="Teaching Hospital..." class="w-full p-2 border rounded-lg outline-none focus:border-blue-500" required>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Workplace / Hospital</label>
+                <input type="text" id="workplace" placeholder="Teaching Hospital..." class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">
+            <button type="submit" id="btn" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition duration-300">
                 Create Account
             </button>
         </form>
     </div>
 
     <script>
-        // උඹ දීපු විස්තර මෙන්න මේ විදිහට දැම්මා මචෝ
-        const SUPABASE_URL = 'https://ykiunbptdrsqwuuegyno.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraXVuYnB0ZHJzcXd1dWVneW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODU0MDEsImV4cCI6MjA5MjA2MTQwMX0.-0Mnb18-efy03usDoVWlVJLJesdOQyFO2ztKNcGX1Ho';
+        // --- උඹේ Supabase විස්තර ඇතුළත් කර ඇත ---
+        const URL = 'https://ykiunbptdrsqwuuegyno.supabase.co';
+        const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraXVuYnB0ZHJzcXd1dWVneW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODU0MDEsImV4cCI6MjA5MjA2MTQwMX0.-0Mnb18-efy03usDoVWlVJLJesdOQyFO2ztKNcGX1Ho';
 
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const _supabase = supabase.createClient(URL, KEY);
 
-        const signupForm = document.getElementById('signupForm');
+        function togglePass() {
+            const passInput = document.getElementById('pass');
+            const btn = event.target;
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                btn.innerText = "HIDE";
+            } else {
+                passInput.type = "password";
+                btn.innerText = "SHOW";
+            }
+        }
 
-        signupForm.addEventListener('submit', async (e) => {
+        async function signUp(e) {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "Registering...";
+            const btn = document.getElementById('btn');
+            btn.innerText = "Processing...";
             btn.disabled = true;
 
+            const name = document.getElementById('fullName').value;
             const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const fullName = document.getElementById('fullName').value;
+            const password = document.getElementById('pass').value;
             const role = document.getElementById('role').value;
             const workplace = document.getElementById('workplace').value;
 
             try {
-                // 1. Supabase Auth එකේ Account එක හදනවා
+                // 1. Supabase Auth එකේ Account එක හැදීම
                 const { data, error } = await _supabase.auth.signUp({
                     email: email,
-                    password: password,
+                    password: password
                 });
 
                 if (error) throw error;
 
-                // 2. Profile table එකට ඉතිරි දත්ත ටික දැමීම
-                const { error: profileError } = await _supabase
+                // 2. Profiles Table එකට දත්ත ටික දානවා
+                const { error: dbError } = await _supabase
                     .from('profiles')
                     .insert([{ 
-                        full_name: fullName, 
+                        full_name: name, 
                         email: email, 
                         role: role, 
                         workplace: workplace,
                         cme_id: 'CME-' + Math.floor(1000 + Math.random() * 9000)
                     }]);
 
-                if (profileError) throw profileError;
+                if (dbError) throw dbError;
 
-                alert("Account Created! You can now check Supabase.");
-                signupForm.reset();
-
+                alert("පට්ට මචන්! Account එක හැදුණා. දැන් Dashboard එකට යන්න ලෑස්ති වෙමු.");
+                
             } catch (err) {
-                alert("Error: " + err.message);
+                alert("අවුලක් වුණා: " + err.message);
             } finally {
                 btn.innerText = "Create Account";
                 btn.disabled = false;
             }
-        });
+        }
     </script>
 </body>
 </html>
