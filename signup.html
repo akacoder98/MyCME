@@ -17,7 +17,7 @@
 
         <form id="signupForm">
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1 text-gray-700">Register as:</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 font-sans">Register as:</label>
                 <select id="role" class="w-full p-2.5 border rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-blue-400">
                     <option value="user">Doctor / Nurse (User)</option>
                     <option value="publisher">College / University (Publisher)</option>
@@ -25,17 +25,17 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1 text-gray-700">Full Name</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 font-sans">Full Name</label>
                 <input type="text" id="fullName" placeholder="Dr. Kamal Perera" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1 text-gray-700">Email Address</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 font-sans">Email Address</label>
                 <input type="email" id="email" placeholder="kamal@example.com" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1 text-gray-700">Password</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 font-sans">Password</label>
                 <div class="relative">
                     <input type="password" id="pass" placeholder="••••••••" class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
                     <button type="button" id="toggleBtn" class="absolute right-2 top-2 text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded font-bold transition">SHOW</button>
@@ -43,7 +43,7 @@
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-semibold mb-1 text-gray-700">Workplace / Hospital</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 font-sans">Workplace / Hospital</label>
                 <input type="text" id="workplace" placeholder="Teaching Hospital..." class="w-full p-2.5 border rounded-lg outline-none focus:border-blue-500" required>
             </div>
 
@@ -52,19 +52,19 @@
             </button>
 
             <div class="text-center">
-                <p class="text-sm text-gray-600">Already have an account? <a href="login.html" class="text-blue-600 font-bold hover:underline">Log In</a></p>
+                <p class="text-sm text-gray-600 font-sans font-medium">Already have an account? <a href="login.html" class="text-blue-600 font-bold hover:underline">Log In</a></p>
             </div>
         </form>
     </div>
 
     <script>
+        // Supabase Configuration
         const SUPABASE_URL = 'https://ykiunbptdrsqwuuegyno.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlraXVuYnB0ZHJzcXd1dWVneW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODU0MDEsImV4cCI6MjA5MjA2MTQwMX0.-0Mnb18-efy03usDoVWlVJLJesdOQyFO2ztKNcGX1Ho';
         
-        // සරලව Initialize කිරීම
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Password Show/Hide
+        // Password Visibility Toggle
         document.getElementById('toggleBtn').onclick = function() {
             const passField = document.getElementById('pass');
             if (passField.type === "password") {
@@ -76,7 +76,7 @@
             }
         };
 
-        // Form Submit
+        // Form Submission logic
         document.getElementById('signupForm').onsubmit = async function(e) {
             e.preventDefault();
             const btn = document.getElementById('btn');
@@ -90,14 +90,16 @@
             const workplace = document.getElementById('workplace').value;
 
             try {
-                const { data, error } = await client.auth.signUp({
+                // Sign up in Supabase Auth
+                const { data, error } = await sb.auth.signUp({
                     email: email,
                     password: password
                 });
 
                 if (error) throw error;
 
-                const { error: dbError } = await client
+                // Insert into Profiles table
+                const { error: dbError } = await sb
                     .from('profiles')
                     .insert([{ 
                         full_name: name, 
@@ -111,7 +113,7 @@
 
                 alert("පට්ට මචන්! Account එක හැදුණා.");
             } catch (err) {
-                alert("අවුලක් වුණා: " + err.message);
+                alert("Error: " + err.message);
             } finally {
                 btn.innerText = "Create Account";
                 btn.disabled = false;
